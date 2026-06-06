@@ -2,7 +2,7 @@
 name = "ComfyUI_Batch_from_AIMMS"
 version = "2.1.0"
 description = "ComfyUI batch execution tools for AIMMS workflows — includes CSV-based and SQLite-based batch nodes."
-license = {text = "MIT"}
+license = {text = "GPL-3.0-or-later"}
 
 [project.urls]
 Repository = "https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS"

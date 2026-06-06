@@ -24,11 +24,13 @@ Database columns expected (from shots table):
   lora_2           - second LoRA name (TEXT)
   lora_3           - third LoRA name (TEXT)
 
-  NOTE on prompt usage:
-    image_prompt / image_negative are used for t2i and i2i workflows.
-    video_prompt / video_negative are used for i2v, t2v, v2v workflows.
-    colour_scheme_image, description, dialogue are optional extra text fields
-    the user can concatenate themselves in the workflow.
+Additional media files are retrieved from the takes table based on shot_id and starred values.
+
+NOTE on prompt usage:
+  image_prompt / image_negative are used for t2i and i2i workflows.
+  video_prompt / video_negative are used for i2v, t2v, v2v workflows.
+  colour_scheme_image, description, dialogue are optional extra text fields
+  the user can concatenate themselves in the workflow.
 """
 
 import os
@@ -134,6 +136,84 @@ def _validate_audio_path(path: str) -> str:
     if not os.path.isfile(norm):
         print(f"[ComfyUI_Batch_from_AIMMS] WARNING: audio_vo file not found: '{norm}'")
     return norm
+
+
+def _get_media_files(db_path: str, shot_id: int):
+    """
+    Retrieve media files from the takes table for a given shot_id.
+    Returns a dictionary with paths for ref_image_1, ref_image_2, ref_image_3,
+    video_file, and audio_vo.
+    """
+    media_files = {
+        "ref_image_1": "",
+        "ref_image_2": "",
+        "ref_image_3": "",
+        "video_file": "",
+        "audio_vo": ""
+    }
+    
+    if not os.path.isfile(db_path):
+        return media_files
+    
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        # Get all takes for this shot_id
+        cursor.execute("SELECT take_type, file_path, starred FROM takes WHERE shot_id = ?", (shot_id,))
+        takes = cursor.fetchall()
+        
+        # Extract project root path from db_path
+        # The db_path is expected to be something like: M:/AIMMS_Projects/project_BlackMagic/data/shots.db
+        # We need to get: M:/AIMMS_Projects/project_BlackMagic to construct full paths
+        project_root = os.path.dirname(os.path.dirname(db_path))
+        
+        for take in takes:
+            take_type = take["take_type"]
+            file_path = take["file_path"]
+            starred = take["starred"]
+            
+            # Skip if file_path is empty
+            if not file_path or not file_path.strip():
+                continue
+                
+            # Construct full path
+            full_path = os.path.join(project_root, file_path)
+            
+            # Check file size - skip if zero (placeholder)
+            if os.path.isfile(full_path) and os.path.getsize(full_path) == 0:
+                continue
+                
+            # Handle different take types
+            if take_type == "base_image":
+                if starred == 1:
+                    media_files["ref_image_1"] = full_path
+                elif starred == 2:
+                    media_files["ref_image_2"] = full_path
+                elif starred == 3:
+                    media_files["ref_image_3"] = full_path
+                # If starred is 0, it could still qualify as ref_image_1 if no other starred=1 exists
+                elif starred == 0 and not media_files["ref_image_1"]:
+                    media_files["ref_image_1"] = full_path
+                    
+            elif take_type == "final_video":
+                # Video files can have starred=0 or 1, include if valid
+                if not media_files["video_file"] or starred == 1:
+                    media_files["video_file"] = full_path
+                    
+            elif take_type == "audio_vo":
+                # Audio files include if present
+                if not media_files["audio_vo"]:
+                    media_files["audio_vo"] = full_path
+                    
+    except Exception as e:
+        print(f"[ComfyUI_Batch_from_AIMMS] ERROR: Failed to retrieve media files: {e}")
+    finally:
+        if conn:
+            conn.close()
+            
+    return media_files
 
 
 def _read_shot_from_db(db_path: str, shot_id: int) -> dict:
@@ -306,20 +386,21 @@ class BatchFromAIMMS:
         lora_2 = _lora_relative_name(g("lora_2"))
         lora_3 = _lora_relative_name(g("lora_3"))
 
+        # Get media files from takes table
+        media_files = _get_media_files(db_path, current_shot_id)
+        
         # Reference images — loaded as ComfyUI IMAGE tensors
-        # Note: Currently not directly supported in the DB schema, placeholder for future implementation
-        ref_image_1 = blank  # Placeholder - no direct equivalent in DB
-        ref_image_2 = blank  # Placeholder - no direct equivalent in DB
-        ref_image_3 = blank  # Placeholder - no direct equivalent in DB
+        ref_image_1 = _load_image_as_tensor(media_files["ref_image_1"])
+        ref_image_2 = _load_image_as_tensor(media_files["ref_image_2"])
+        ref_image_3 = _load_image_as_tensor(media_files["ref_image_3"])
 
-        # Video path - Note: Not directly supported in current DB schema
-        video_file = ""
-        # if video_file and not os.path.isfile(video_file):
-        #     print(f"[ComfyUI_Batch_from_AIMMS] WARNING: video_file not found: '{video_file}'")
+        # Video path
+        video_file = _normalise_path(media_files["video_file"])
+        if video_file and not os.path.isfile(video_file):
+            print(f"[ComfyUI_Batch_from_AIMMS] WARNING: video_file not found: '{video_file}'")
 
         # Audio VO path — validated for extension and existence
-        # Note: Not directly supported in current DB schema
-        audio_vo = ""
+        audio_vo = _validate_audio_path(media_files["audio_vo"])
 
         # Prompt fields
         positive_image = g("image_prompt")
@@ -379,12 +460,18 @@ class BatchFromAIMMS:
 # compatibility by comparing the type token: if both sides are lists, they
 # match as COMBO. So we must use the same list that folder_paths provides.
 # ---------------------------------------------------------------------------
+  
+# Initialize with empty list as fallback
+_loras = []
 
+# Try to get the actual LoRA list from ComfyUI's folder_paths
 try:
-    import folder_paths as _fp
-    _loras = _fp.get_filename_list("loras")
-except Exception:
-    _loras = []
+    import folder_paths
+    _loras = folder_paths.get_filename_list("loras")
+except Exception as e:
+    # Log a warning if we can't get the LoRA list, but continue with empty list
+    print(f"[ComfyUI_Batch_from_AIMMS] WARNING: Could not load LoRA list from folder_paths: {e}")
+    print("[ComfyUI_Batch_from_AIMMS] LoRA connectors will show as empty strings. Make sure your LoRA folder is properly configured.")
 
 BatchFromAIMMS.RETURN_TYPES = (
     "STRING",  # shot_id

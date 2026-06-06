@@ -1,3 +1,15 @@
-from .batch_from_csv_node import NODE_CLASS_MAPPINGS, NODE_DISPLAY_NAME_MAPPINGS
+from .batch_from_csv_node import BatchFromCSV
+from .batch_from_aimms_node import BatchFromAIMMS
+
+NODE_CLASS_MAPPINGS = {
+    "BatchFromCSV": BatchFromCSV,
+    "BatchFromAIMMS": BatchFromAIMMS,
+}
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "BatchFromCSV": "Batch From CSV",
+    "BatchFromAIMMS": "Batch From AIMMS",
+}
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
+

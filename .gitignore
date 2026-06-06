@@ -1,0 +1,7 @@
+# Folders to ignore
+/dev
+/comfyui-skills
+
+
+# files to ignore
+AGENT.md

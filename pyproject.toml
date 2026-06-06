@@ -1,8 +1,13 @@
 [project]
-name = "ComfyUI_Batch_from_CSV"
-version = "2.0.0"
-description = "Batch run ComfyUI workflows from a CSV file — prompts, reference images, video paths, audio VO, LoRA paths and shot metadata, one row per execution."
+name = "ComfyUI_Batch_from_AIMMS"
+version = "2.1.0"
+description = "ComfyUI batch execution tools for AIMMS workflows — includes CSV-based and SQLite-based batch nodes."
 license = {text = "MIT"}
 
 [project.urls]
-Repository = "https://github.com/mdkberry/ComfyUI_Batch_from_CSV"
+Repository = "https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS"
+Homepage = "https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS"
+Documentation = "https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS#readme"
+Changelog = "https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS/releases"
+
+

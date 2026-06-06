@@ -247,12 +247,20 @@ def _read_shot_from_db(db_path: str, shot_id: int) -> dict:
             conn.close()
 
 
-def _build_info(row: dict, shot_id: int) -> str:
+def _build_info(row: dict, shot_id: int, media_files: dict) -> str:
     """Build a human-readable summary of the current shot for debug/metadata embedding."""
     lines = [f"Shot ID : {shot_id}"]
     for key, val in row.items():
         if val and str(val).strip():
             lines.append(f"{key:20s}: {str(val).strip()}")
+    
+    # Add media file paths to the info output
+    lines.append("")
+    lines.append("Media Files:")
+    for key, path in media_files.items():
+        if path and path.strip():
+            lines.append(f"{key:20s}: {str(path).strip()}")
+    
     return "\n".join(lines)
 
 
@@ -409,7 +417,7 @@ class BatchFromAIMMS:
         negative_video = g("video_negative")
 
         row_index = current_shot_id  # exposed so users can pipe it for debugging
-        info = _build_info(row, current_shot_id)
+        info = _build_info(row, current_shot_id, media_files)
 
         print(
             f"[ComfyUI_Batch_from_AIMMS] Loaded shot {current_shot_id}: "

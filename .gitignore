@@ -5,3 +5,4 @@
 
 # files to ignore
 AGENT.md
+extract_schema.ps1

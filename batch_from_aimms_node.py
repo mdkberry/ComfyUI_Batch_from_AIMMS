@@ -269,7 +269,7 @@ def _build_info(row: dict, shot_id: int, media_files: dict) -> str:
 # ---------------------------------------------------------------------------
 
 class BatchFromAIMMS:
-    """
+    DESCRIPTION = """
     Reads one shot per execution from an AIMMS SQLite database (selected by shot_id).
 
     Outputs

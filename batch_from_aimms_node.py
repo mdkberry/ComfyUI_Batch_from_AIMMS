@@ -276,8 +276,8 @@ class BatchFromAIMMS:
     ## Inputs
     - **db_path** (STRING): Path to the AIMMS SQLite database file
     - **shot_id** (STRING): Comma-separated list of shot IDs to process (e.g. '1,2,5,3')
-    
-    ## Database Fields Mapping
+
+    ## Database Fields Mapping (AIMMS shots.db)
     - **shot_id** → shot_id (STRING)
     - **order_number** → order_number (STRING)
     - **shot_name** → shot_name (STRING)
@@ -285,9 +285,9 @@ class BatchFromAIMMS:
     - **scene_context** → time_of_day, location, country, year (STRING)
     - **dialogue** → dialogue (STRING)
     - **lora_1/2/3** → lora_1/2/3 (STRING)
-    - **ref_image_1/2/3** → takes table (base_image, starred=1/2/3) (IMAGE)
-    - **video_file** → takes table (final_video, starred=1) (STRING)
-    - **audio_vo** → takes table (audio_vo) (STRING)
+    - **ref_image_1/2/3** → (base_image (FF/MF/LF), starred=1/2/3) (IMAGE)
+    - **video_file** → (starred video URL, starred=1) (STRING)
+    - **audio_vo** → (audio_vo URL) (STRING)
     - **positive_image** → image_prompt (STRING)
     - **negative_image** → image_negative (STRING)
     - **positive_video** → video_prompt (STRING)

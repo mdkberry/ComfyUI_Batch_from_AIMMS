@@ -2,9 +2,9 @@
 
 ***NOTE: This is a set of two nodes for ComfyUI batch processing.***
 
-**Batch_from_CSV** - [documentation](docs/BatchFromCSV.md)
+**Batch_from_CSV_full** - [documentation](docs/BatchFromCSV_full.md)
 
-**Batch_from_AIMMS** - [documentation](docs/BatchFromAIMMS.md)
+**Batch_from_AIMMS_full** - [documentation](docs/BatchFromAIMMS_full.md)
 
 ***This system provides two approaches for batch processing in ComfyUI: CSV-based processing and direct database integration with AIMMS. The CSV node remains fully functional, but the system now includes an additional node for processing directly from AIMMS databases without needing CSV export.*** - Mark, 7th June 2026.
 
@@ -63,22 +63,22 @@ ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 ├── pyproject.toml
 ├── README.md                    ← This file (main documentation)
 └── docs/                        ← Detailed documentation for each node
-    ├── BatchFromCSV.md          ← CSV node documentation
-    └── BatchFromAIMMS.md        ← AIMMS node documentation
+    ├── BatchFromCSV_full.md          ← CSV node documentation
+    └── BatchFromAIMMS_full.md        ← AIMMS node documentation
 ```
 
 ## Usage Guide
 
 ### For CSV Processing
 
-1. See [BatchFromCSV.md](docs/BatchFromCSV.md) for detailed instructions on using the CSV-based node
+1. See [BatchFromCSV_full.md](docs/BatchFromCSV_full.md) for detailed instructions on using the CSV-based node
 2. Export your shots from AIMMS to CSV format
 3. Place the CSV file in the `csv_files` directory
 4. Use the "Batch from CSV 📋" node in your ComfyUI workflow
 
 ### For Database Processing
 
-1. See [BatchFromAIMMS.md](docs/BatchFromAIMMS.md) for detailed instructions on using the database node
+1. See [BatchFromAIMMS_full.md](docs/BatchFromAIMMS_full.md) for detailed instructions on using the database node
 2. Point the node to your AIMMS SQLite database file
 3. Specify the shot IDs you want to process
 4. Use the "Batch from AIMMS 🎬" node in your ComfyUI workflow

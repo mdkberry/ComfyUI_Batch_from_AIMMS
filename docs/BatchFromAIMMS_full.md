@@ -1,16 +1,17 @@
-# ComfyUI_Batch_from_CSV 📋
+# ComfyUI_Batch_from_AIMMS 🎬
 
 ***NOTE: This is part of a multi-node system for ComfyUI batch processing. The original CSV functionality remains unchanged, but the overall system now includes an additional node for processing directly from AIMMS databases. See the main [README.md](../README.md) for more information about the complete system.*** - Mark, 1st June 2026.
 
-A custom ComfyUI node for **batch/bulk workflow processing** driven entirely from a CSV file.
-Each row in the CSV represents one "shot" or generation job. The node reads one row per execution, making it perfect for automating large batches across any workflow type — t2i, i2i, i2v, t2v, v2v, or anything else.
+A custom ComfyUI node for **batch/bulk workflow processing** driven directly from an AIMMS SQLite database.
+Each shot is selected by shot_id and processed individually, making it perfect for automating large batches across any workflow type — t2i, i2i, i2v, t2v, v2v, or anything else.
 
 ---
 
-**Example csv row**:
+**Example database schema**:
 
-<img width="1860" height="115" alt="example-row-csv" src="https://github.com/user-attachments/assets/c902990c-c26e-4583-9d41-86e914439c1b" />
-
+The node accesses two tables in the AIMMS database:
+- `shots` table containing shot metadata
+- `takes` table containing media files associated with each shot
 
 ---
 
@@ -18,13 +19,11 @@ Each row in the CSV represents one "shot" or generation job. The node reads one 
 
 <img width="1842" height="921" alt="screenshot_connections_v2 0 3" src="https://github.com/user-attachments/assets/175497be-0583-4780-b032-e675227b2c39" />
 
-_The above screenshot shows viable connections you can use and examples of connector outputs for reference. The actual node is on the left. It will load the rows from csv one at a time based on seed number relating to row number of the csv._
+_The above screenshot shows viable connections you can use and examples of connector outputs for reference. The actual node is on the left. It will load shot data from the AIMMS database based on the shot_id you provide._
 
 ---
 
 ## ✨ Output Connectors
-
-_(Field names relate to [AIMMS Storyboard Management](https://markdkberry.com/software/)  csv export feature)_
 
 | Output connector  | Type   | Description |
 |-------------------|--------|-------------|
@@ -46,25 +45,26 @@ _(Field names relate to [AIMMS Storyboard Management](https://markdkberry.com/so
 | `negative_image`  | STRING | Negative prompt text for image generation |
 | `positive_video`  | STRING | Positive prompt text for video generation (i2v / t2v / v2v) |
 | `negative_video`  | STRING | Negative prompt text for video generation |
-| `row_index`       | INT    | The row number that was loaded — handy for debugging |
-| `info`            | STRING | Full row summary — pipe into a **Show Any** node to embed all row data in PNG workflow metadata |
+| `row_index`       | INT    | The shot ID that was loaded — handy for debugging |
+| `info`            | STRING | Full shot summary — pipe into a **Show Any** node to embed all shot data in PNG workflow metadata |
 
 **Notes on the text/prompt fields:**
 - `positive_image` / `negative_image` — use for image-based workflows (t2i, i2i).
 - `positive_video` / `negative_video` — use for video-based workflows (i2v, t2v, v2v).
 - `colour_scheme`, `scene_context`, `dialogue` — optional helper fields. Concatenate any combination of these with a prompt in your workflow using a **String Concatenate** or similar node.
-- LoRA and audio paths are returned as plain strings — blank if not set in the CSV. Connect to the appropriate loader's file path input.
+- LoRA and audio paths are returned as plain strings — blank if not set in the database. Connect to the appropriate loader's file path input.
 
 ---
 
 ## ✅ Key Features
 
-- **Auto-scan** — any `.csv` file dropped in the `csv_files` folder is picked up automatically _(press R to refresh nodes if ComfyUI is open)_ .
-- **Seed-driven batching** — set seed to *increment* and queue N runs to process N rows _(set to 1 will begin with row below column headings in csv)_ .
-- **Loop-safe** — if seed exceeds the number of rows the node wraps around.
-- **Graceful fallback** — missing image files produce a blank 64×64 black tensor (no crash); missing video/audio/LoRA paths log a warning and return the path string as-is.
-- **Windows paths supported** — backslashes are normalised automatically on all OS.
-- **Mixed workflow support** — image and video prompts are separate outputs; use whichever your workflow needs.
+- **Direct database access** — reads directly from AIMMS SQLite database without needing CSV export
+- **Shot ID selection** — specify exactly which shots to process using comma-separated shot IDs
+- **Media file handling** — automatically retrieves reference images, videos, and audio from the takes table
+- **Read-only database access** — safely reads from the database without modifying it
+- **Graceful fallback** — missing image files produce a blank 64×64 black tensor (no crash); missing video/audio/LoRA paths log a warning and return the path string as-is
+- **Windows paths supported** — backslashes are normalised automatically on all OS
+- **Mixed workflow support** — image and video prompts are separate outputs; use whichever your workflow needs
 
 ---
 
@@ -94,7 +94,7 @@ _(Field names relate to [AIMMS Storyboard Management](https://markdkberry.com/so
 ```
 ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 │
-├── csv_files/                  ← PUT YOUR CSV FILES HERE
+├── csv_files/                  ← PUT YOUR CSV FILES HERE (for CSV node)
 │   ├── example_batch.csv
 │   └── my_project.csv
 │
@@ -104,39 +104,46 @@ ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 ├── pyproject.toml
 ├── README.md                    ← Main documentation for the entire system
 └── docs/                        ← Detailed documentation for each node
-    ├── BatchFromCSV.md          ← This file (CSV node documentation)
-    └── BatchFromAIMMS.md        ← AIMMS node documentation
+    ├── BatchFromCSV_full.md          ← CSV node documentation
+    └── BatchFromAIMMS_full.md        ← This file (AIMMS node documentation)
 ```
 
 ---
 
-## 📝 CSV Format
+## 📝 Database Schema
 
-Your CSV must use these **exact column headers** (order doesn't matter, all are optional except what your workflow needs):
+The node expects an AIMMS database with the following table structure:
 
-| Column           | Type   | Description |
-|------------------|--------|-------------|
-| `shot_id`        | string | Unique identifier for the shot |
-| `order_number`   | string | Execution order |
-| `shot_name`      | string | Shot label for output file naming |
-| `colour_scheme`  | string | Colour palette description (optional — concatenate in workflow) |
-| `scene_context`  | string | Scene/environment description (optional) |
-| `dialogue`       | string | Dialogue text (optional) |
-| `lora_1`         | path   | Full path to a LoRA `.safetensors` file |
-| `lora_2`         | path   | Full path to a second LoRA |
-| `lora_3`         | path   | Full path to a third LoRA |
-| `ref_image_1`    | path   | Full path to a reference image (PNG/JPG etc.) |
-| `ref_image_2`    | path   | Full path to a second reference image |
-| `ref_image_3`    | path   | Full path to a third reference image |
-| `video_file`     | path   | Full path to a `.mp4` video file |
-| `audio_vo`       | path   | Full path to a VO audio file (`.mp3`, `.m4a`, `.flac`, `.wav`) |
-| `positive_image` | string | Positive prompt for image generation |
-| `negative_image` | string | Negative prompt for image generation |
-| `positive_video` | string | Positive prompt for video generation |
-| `negative_video` | string | Negative prompt for video generation |
+### shots table
 
-> **Tip:** Wrap cell values in double quotes if they contain commas.
-> Leave a cell blank (not absent) if that field isn't needed for a particular row.
+| Column                | Type   | Description |
+|-----------------------|--------|-------------|
+| `shot_id`             | INT    | Unique shot identifier (PRIMARY KEY) |
+| `order_number`        | INT    | Sort/execution order |
+| `shot_name`           | TEXT   | Shot label for output file naming |
+| `description`         | TEXT   | Scene/environment description (optional) |
+| `dialogue`            | TEXT   | Dialogue text (optional) |
+| `image_prompt`        | TEXT   | Positive prompt for image generation |
+| `image_negative`      | TEXT   | Negative prompt for image generation |
+| `colour_scheme_image` | TEXT   | Colour palette description (optional) |
+| `video_prompt`        | TEXT   | Positive prompt for video generation |
+| `video_negative`      | TEXT   | Negative prompt for video generation |
+| `lora_1`              | TEXT   | LoRA name (relative path) |
+| `lora_2`              | TEXT   | Second LoRA name (relative path) |
+| `lora_3`              | TEXT   | Third LoRA name (relative path) |
+| `time_of_day`         | TEXT   | Time of day (e.g. "morning", "night") |
+| `location`            | TEXT   | Location description |
+| `country`             | TEXT   | Country |
+| `year`                | TEXT   | Year/time period |
+
+### takes table
+
+| Column      | Type   | Description |
+|-------------|--------|-------------|
+| `shot_id`   | INT    | Foreign key to shots table |
+| `take_type` | TEXT   | Type of media ("base_image", "final_video", "audio_vo") |
+| `file_path` | TEXT   | Path to the media file (relative to project root) |
+| `starred`   | INT    | Priority indicator (1-3 for images, 0-1 for video/audio) |
 
 ---
 
@@ -144,15 +151,19 @@ Your CSV must use these **exact column headers** (order doesn't matter, all are 
 
 ### Step 1 — Add the node
 
-Double-click the canvas → search for **"Batch from CSV"** (category: `Batch/CSV`).
+Double-click the canvas → search for **"Batch from AIMMS"** (category: `Batch/AIMMS`).
 
-For database processing from AIMMS, search for **"Batch from AIMMS"** (category: `Batch/AIMMS`).
+For CSV processing, search for **"Batch from CSV"** (category: `Batch/CSV`).
 
-### Step 2 — Select your CSV
+### Step 2 — Select your database
 
-Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI menu if a newly added file doesn't appear.
+Enter the path to your AIMMS SQLite database file in the `db_path` field. The default path is `M:\AIMMS_Projects\project_BlackMagic\data\shots.db`.
 
-### Step 3 — Connect outputs
+### Step 3 — Specify shot IDs
+
+Enter comma-separated shot IDs in the `shot_id` field (e.g. "1,2,5,3").
+
+### Step 4 — Connect outputs
 
 | Node output       | Connect to |
 |-------------------|------------|
@@ -169,13 +180,12 @@ Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI 
 | `audio_vo`        | Audio File Loader → file path input |
 | `shot_name`       | Save Image → filename_prefix |
 | `row_index`       | Optional — debug display or logging |
-| `info`            | Show Any node → embed all row data in PNG metadata |
+| `info`            | Show Any node → embed all shot data in PNG metadata |
 
-### Step 4 — Configure for batch
+### Step 5 — Configure for batch
 
-1. On the **Batch from CSV** node, set the `seed` widget control to **increment** and the seed to 1 _(starts at row below the header)_ .
-2. In the ComfyUI menu set **Batch count** to the number of rows in your CSV _(excluding column header)_ .
-3. Click **Queue Prompt** — ComfyUI will run once per row, automatically loading the next row each time.
+1. In the ComfyUI menu, set **Batch count** to the number of shot IDs you specified.
+2. Click **Queue Prompt** — ComfyUI will run once per shot ID, automatically loading each shot from the database.
 
 ---
 
@@ -183,37 +193,33 @@ Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI 
 
 | Problem | Fix |
 |---------|-----|
-| No CSV files in dropdown | Make sure your `.csv` is inside `csv_files/`, then click **Refresh** or press R to reload nodes inside comfyUI  |
-| Image outputs are blank/black | Check the path in the CSV is correct and the file exists |
+| Database file not found | Check the path in `db_path` is correct and the file exists |
+| Shot ID not found | Verify the shot ID exists in your database |
+| Image outputs are blank/black | Check the media file paths in the takes table are correct and the files exist |
 | Video/audio path warning in console | The path is returned as a string even if missing — check spelling |
 | LoRA not loading | Confirm the full path is correct; the node returns the path as a string only |
-| Row not advancing | Ensure the seed is set to **increment**, not fixed |
-| Info shows empty paths | Make sure the relevant columns exist in your CSV header row |
-| No outputs being made after first run | Make sure you have set the seed back to 1 to start over |
+| Info shows empty paths | Make sure the relevant fields exist in your database tables |
+| No outputs being made after first run | Make sure you have set the shot IDs back to your desired list to start over |
 | Second runs are slow | You may need to offload models between batch runs to clear the memory for VRAM and RAM |
-| OOMs cause failures | Try setting switches for ComfyUI to aid with avoiding OOMS during batch processing and add memory clearing features to the workflow. |
+| OOMs cause failures | Try setting switches for ComfyUI to aid with avoiding OOMs during batch processing and add memory clearing features to the workflow. |
 
 ---
 
 ## Integration with AIMMS Storyboard Management System
 
-This node is specifically designed to work with [AIMMS Storyboard Management System (vrs 1.2.0)](https://markdkberry.com/software/) when exporting shots to CSV format. 
+This node provides direct integration with [AIMMS Storyboard Management System (vrs 1.2.0)](https://markdkberry.com/software/) by accessing the SQLite database directly.
 
-For direct integration with AIMMS project databases (without CSV export), see the companion node [Batch from AIMMS 🎬](BatchFromAIMMS.md).
+For CSV-based processing from AIMMS exports, see the companion node [Batch from CSV 📋](BatchFromCSV.md).
 
 _AIMMS (vrs 1.2.0) screenshot of shot details page, showing popup entries for shot management:_
 
 <img width="1914" height="1076" alt="AIMMS_shot_details" src="https://github.com/user-attachments/assets/1e281f07-ffd1-4fa3-87fd-c9cc6906f54d" />
 
-_AIMMS (vrs 1.2.0) screenshot of option to export shots to CSV format that works directly with this custom node:_
-
-<img width="1916" height="1080" alt="AIMMS_export_to_csv" src="https://github.com/user-attachments/assets/4e472a5-b5b1-4322-835b-7b278ebafef4" />
-
 ---
 
 ## Credits
 
-This work was based on and inspired by https://github.com/TharindaMarasingha/ComfyUI-CSV-to-Prompt
+This work was based on and inspired by https://github.com/TharindaMarasingha/ComfyUI-CSV-to-Prompt and the existing Batch from CSV 📋 node.
 
 ## 📄 License
 

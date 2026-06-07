@@ -345,32 +345,6 @@ class BatchFromAIMMS:
                         "tooltip": "Comma-separated list of shot IDs to process (e.g. '1,2,5,3')"
                     }
                 ),
-            },
-            "optional": {
-                "info": (
-                    "STRING",
-                    {
-                        "default": "Database fields mapping:\n\n"
-                                  "• shot_id → shot_id (STRING)\n"
-                                  "• order_number → order_number (STRING)\n"
-                                  "• shot_name → shot_name (STRING)\n"
-                                  "• colour_scheme → colour_scheme_image (STRING)\n"
-                                  "• scene_context → time_of_day, location, country, year (STRING)\n"
-                                  "• dialogue → dialogue (STRING)\n"
-                                  "• lora_1/2/3 → lora_1/2/3 (STRING)\n"
-                                  "• ref_image_1/2/3 → takes table (base_image, starred=1/2/3) (IMAGE)\n"
-                                  "• video_file → takes table (final_video, starred=1) (STRING)\n"
-                                  "• audio_vo → takes table (audio_vo) (STRING)\n"
-                                  "• positive_image → image_prompt (STRING)\n"
-                                  "• negative_image → image_negative (STRING)\n"
-                                  "• positive_video → video_prompt (STRING)\n"
-                                  "• negative_video → video_negative (STRING)\n"
-                                  "• row_index → shot_id (INT)\n"
-                                  "• info → full shot summary (STRING)",
-                        "multiline": True,
-                        "readonly": True
-                    }
-                )
             }
         }
 

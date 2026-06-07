@@ -1,7 +1,5 @@
 # ComfyUI_Batch_from_CSV 📋
 
-***NOTE: This is part of a multi-node system for ComfyUI batch processing. The original CSV functionality remains unchanged, but the overall system now includes an additional node for processing directly from AIMMS databases. See the main [README.md](../README.md) for more information about the complete system.*** - Mark, 1st June 2026.
-
 A custom ComfyUI node for **batch/bulk workflow processing** driven entirely from a CSV file.
 Each row in the CSV represents one "shot" or generation job. The node reads one row per execution, making it perfect for automating large batches across any workflow type — t2i, i2i, i2v, t2v, v2v, or anything else.
 
@@ -11,6 +9,7 @@ Each row in the CSV represents one "shot" or generation job. The node reads one 
 
 <img width="1860" height="115" alt="example-row-csv" src="https://github.com/user-attachments/assets/c902990c-c26e-4583-9d41-86e914439c1b" />
 
+*(for all column headings see csv_files example_batch.csv)*
 
 ---
 
@@ -173,7 +172,7 @@ Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI 
 
 ### Step 4 — Configure for batch
 
-1. On the **Batch from CSV** node, set the `seed` widget control to **increment** and the seed to 1 _(starts at row below the header)_ .
+1. On the **Batch from CSV** node, set the `seed` widget control to **increment** and the seed to 1 _(set to 1 it starts at row below the header)_ .
 2. In the ComfyUI menu set **Batch count** to the number of rows in your CSV _(excluding column header)_ .
 3. Click **Queue Prompt** — ComfyUI will run once per row, automatically loading the next row each time.
 

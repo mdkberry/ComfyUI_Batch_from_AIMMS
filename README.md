@@ -1,16 +1,18 @@
 # ComfyUI_Batch_from_AIMMS 📋
 
+***CSV is working but AIMMS node is in development and needs further testing at this time. Check back in 2 days.*** - Mark, 7th June 2026.
+
 ***NOTE: This is a set of two nodes for ComfyUI batch processing.***
 
-**Batch_from_CSV_full** - [documentation](docs/BatchFromCSV_full.md)
+**Batch_from_CSV** - [documentation](docs/BatchFromCSV_full.md)
 
-**Batch_from_AIMMS_full** - [documentation](docs/BatchFromAIMMS_full.md)
+**Batch_from_AIMMS** - [documentation](docs/BatchFromAIMMS_full.md)
 
-***This system provides two approaches for batch processing in ComfyUI: CSV-based processing and direct database integration with AIMMS. The CSV node remains fully functional, but the system now includes an additional node for processing directly from AIMMS databases without needing CSV export.*** - Mark, 7th June 2026.
+***This system provides two approaches for batch processing in ComfyUI: CSV-based processing and direct database integration with AIMMS.***
 
 ## Overview
 
-ComfyUI_Batch_from_AIMMS is a custom node system for ComfyUI that provides two methods for batch processing workflows:
+*ComfyUI_Batch_from_AIMMS* is a custom node system for ComfyUI that provides two methods for batch processing workflows:
 
 1. **Batch from CSV 📋** - Processes shots from CSV files exported from AIMMS or other sources
 2. **Batch from AIMMS 🎬** - Directly accesses shots from AIMMS SQLite databases
@@ -72,15 +74,15 @@ ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 ### For CSV Processing
 
 1. See [BatchFromCSV_full.md](docs/BatchFromCSV_full.md) for detailed instructions on using the CSV-based node
-2. Export your shots from AIMMS to CSV format
+2. Export your shots from AIMMS to CSV format *(or make your own csv with correct column headers)*
 3. Place the CSV file in the `csv_files` directory
 4. Use the "Batch from CSV 📋" node in your ComfyUI workflow
 
 ### For Database Processing
 
 1. See [BatchFromAIMMS_full.md](docs/BatchFromAIMMS_full.md) for detailed instructions on using the database node
-2. Point the node to your AIMMS SQLite database file
-3. Specify the shot IDs you want to process
+2. Point the node to your AIMMS SQLite database file (AIMMS application does not need to be open it will tap into the shots.db) e.g. `M:\AIMMS_Projects\project_BlackMagic\data\shots.db` *(note this is Windows file path, both Linux and Windows methods should work. It must see the shots.db)*
+3. Specify the shot IDs you want to process (e.g. `1,2,3,54,101`)
 4. Use the "Batch from AIMMS 🎬" node in your ComfyUI workflow
 
 ## Common Output Connectors
@@ -98,7 +100,7 @@ Both nodes provide similar output connectors:
 
 ## Integration with AIMMS Storyboard Management System
 
-Both nodes are designed to work with [AIMMS Storyboard Management System (vrs 1.2.0)](https://markdkberry.com/software/):
+Both nodes are designed to work with [AIMMS Storyboard Management System (vrs 1.2.x)](https://markdkberry.com/software/):
 
 - **CSV node** - Uses exported CSV data from AIMMS
 - **Database node** - Directly accesses the AIMMS SQLite database
@@ -111,7 +113,7 @@ For more information about AIMMS integration, see the respective documentation f
 
 - **No nodes appearing** - Make sure you've restarted ComfyUI after installation
 - **CSV not found** - Check your CSV file is in the `csv_files` directory
-- **Database not found** - Verify the database path is correct
+- **Database not found** - Verify the database path is correct *(Windows or Linux supported, OSX is not tested)*
 - **Missing media files** - Ensure all referenced files exist at the specified paths
 - **LoRA not loading** - Confirm the LoRA paths are correct relative to your models/loras folder
 
@@ -121,6 +123,7 @@ If you encounter issues not covered here:
 1. Check the specific node documentation files
 2. Review the troubleshooting sections in each node's documentation
 3. Check the ComfyUI console for error messages
+4. Log an issue on [GitHub](https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS/issues)
 
 ## Credits
 

@@ -1,5 +1,7 @@
 # ComfyUI_Batch_from_AIMMS 🎬
 
+***CSV node is working but AIMMS node is in development and needs further testing at this time. Check back in 2 days.*** - Mark, 7th June 2026.
+
 ***NOTE: This is part of a multi-node system for ComfyUI batch processing. The original CSV functionality remains unchanged, but the overall system now includes an additional node for processing directly from AIMMS databases. See the main [README.md](../README.md) for more information about the complete system.*** - Mark, 1st June 2026.
 
 A custom ComfyUI node for **batch/bulk workflow processing** driven directly from an AIMMS SQLite database.

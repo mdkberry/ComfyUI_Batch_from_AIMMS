@@ -1,6 +1,6 @@
 # ComfyUI_Batch_from_CSV 📋
 
-***NOTE: this is in development. I will update this note when its reached a satisfactory "release" point, but feel free to download it as it works well, I am really just tweaking the usefulness to work better with [AIMMS Storyboard Management Software](https://www.patreon.com/posts/aimms-license-156728576). Just be aware any updates could break older versions and you'll have to re-wire the connectors up again in previous workflows.*** - Mark, 1st May 2026.
+***NOTE: This is part of a multi-node system for ComfyUI batch processing. The original CSV functionality remains unchanged, but the overall system now includes an additional node for processing directly from AIMMS databases. See the main [README.md](../README.md) for more information about the complete system.*** - Mark, 1st June 2026.
 
 A custom ComfyUI node for **batch/bulk workflow processing** driven entirely from a CSV file.
 Each row in the CSV represents one "shot" or generation job. The node reads one row per execution, making it perfect for automating large batches across any workflow type — t2i, i2i, i2v, t2v, v2v, or anything else.
@@ -72,17 +72,19 @@ _(Field names relate to [AIMMS Storyboard Management](https://markdkberry.com/so
 
 ### Manual (recommended)
 
-1. For ComfyUI portable, git clone the `ComfyUI_Batch_from_CSV` folder into your ComfyUI `custom_nodes` directory:
+1. For ComfyUI portable, git clone the `ComfyUI_Batch_from_AIMMS` folder into your ComfyUI `custom_nodes` directory:
    ```
-   ComfyUI/custom_nodes/git clone https://github.com/mdkberry/ComfyUI_Batch_from_CSV.git
+   ComfyUI/custom_nodes/git clone https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS.git
    ```
 2. Restart ComfyUI.
-3. The node appears under **Batch/CSV → Batch from CSV 📋**.
+3. The nodes appear under:
+   - **Batch/CSV → Batch from CSV 📋** (for CSV processing)
+   - **Batch/AIMMS → Batch from AIMMS 🎬** (for database processing)
 
 ### Via ComfyUI Manager
 
 1. Open **ComfyUI Manager → Install via Git URL**.
-2. Paste: `https://github.com/mdkberry/ComfyUI_Batch_from_CSV`
+2. Paste: `https://github.com/mdkberry/ComfyUI_Batch_from_AIMMS`
 3. Restart ComfyUI.
 
 ---
@@ -90,16 +92,20 @@ _(Field names relate to [AIMMS Storyboard Management](https://markdkberry.com/so
 ## 📁 Folder Structure
 
 ```
-ComfyUI/custom_nodes/ComfyUI_Batch_from_CSV/
+ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 │
 ├── csv_files/                  ← PUT YOUR CSV FILES HERE
 │   ├── example_batch.csv
 │   └── my_project.csv
 │
 ├── __init__.py
-├── batch_from_csv_node.py
+├── batch_from_csv_node.py        ← CSV processing node
+├── batch_from_aimms_node.py     ← AIMMS database processing node
 ├── pyproject.toml
-└── README.md
+├── README.md                    ← Main documentation for the entire system
+└── docs/                        ← Detailed documentation for each node
+    ├── BatchFromCSV.md          ← This file (CSV node documentation)
+    └── BatchFromAIMMS.md        ← AIMMS node documentation
 ```
 
 ---
@@ -139,6 +145,8 @@ Your CSV must use these **exact column headers** (order doesn't matter, all are 
 ### Step 1 — Add the node
 
 Double-click the canvas → search for **"Batch from CSV"** (category: `Batch/CSV`).
+
+For database processing from AIMMS, search for **"Batch from AIMMS"** (category: `Batch/AIMMS`).
 
 ### Step 2 — Select your CSV
 
@@ -187,23 +195,19 @@ Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI 
 
 ---
 
-## Designed For Use with AIMMS Storyboard Management System (vrs 1.2.0)
+## Integration with AIMMS Storyboard Management System
 
-Though this custom node will work with any csv provided the column headings and entries are correct format, it is specifically designed for use with [AIMMS Storyboard Management System (vrs 1.2.0)](https://markdkberry.com/software/) in conjuction with ComfyUI. _(Future versions of *ComyfUI_Batch_from_CSV* custom node will feature direct integration to AIMMS project databases as well as csv.)_
-</br>
+This node is specifically designed to work with [AIMMS Storyboard Management System (vrs 1.2.0)](https://markdkberry.com/software/) when exporting shots to CSV format. 
+
+For direct integration with AIMMS project databases (without CSV export), see the companion node [Batch from AIMMS 🎬](BatchFromAIMMS.md).
 
 _AIMMS (vrs 1.2.0) screenshot of shot details page, showing popup entries for shot management:_
 
 <img width="1914" height="1076" alt="AIMMS_shot_details" src="https://github.com/user-attachments/assets/1e281f07-ffd1-4fa3-87fd-c9cc6906f54d" />
 
-</br>
+_AIMMS (vrs 1.2.0) screenshot of option to export shots to CSV format that works directly with this custom node:_
 
-_AIMMS (vrs 1.2.0) screenshot of option to export shots to csv format that works directly with *ComyfUI_Batch_from_CSV* custom node. Copy the csv to the custom_node csv folder and load into ComfyUI for batch processing shots._ 
-
-<img width="1916" height="1080" alt="AIMMS_export_to_csv" src="https://github.com/user-attachments/assets/4e9472a5-b5b1-4322-835b-7b278ebafef4" />
-</br>
-
-
+<img width="1916" height="1080" alt="AIMMS_export_to_csv" src="https://github.com/user-attachments/assets/4e472a5-b5b1-4322-835b-7b278ebafef4" />
 
 ---
 
@@ -213,4 +217,12 @@ This work was based on and inspired by https://github.com/TharindaMarasingha/Com
 
 ## 📄 License
 
-MIT — free to use, modify, and share.
+This project was originally released under the MIT License. As of version 2.1.0, the project has been relicensed under the GNU General Public License v3.0 (GPL‑3.0).
+
+GPL‑3.0 is a copyleft license, which means:
+
+You may use, modify, and redistribute this software
+  
+Any derivative works must also be licensed under GPL‑3.0
+  
+Source code for modified versions must be made available

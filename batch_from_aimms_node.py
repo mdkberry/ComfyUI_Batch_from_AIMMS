@@ -386,8 +386,18 @@ class BatchFromAIMMS:
 
         # Optional text fields (user concatenates these in workflow)
         colour_scheme = g("colour_scheme_image")  # Note: using colour_scheme_image from DB
-        scene_context = g("description")  # Using description from DB as scene_context
         dialogue      = g("dialogue")
+        
+        # Create scene_context by concatenating time_of_day, location, country, and year fields
+        scene_parts = [
+            g("time_of_day"),
+            g("location"),
+            g("country"),
+            g("year")
+        ]
+        
+        # Filter out empty strings and join with comma delimiters
+        scene_context = ", ".join(part for part in scene_parts if part and part.strip())
 
         # LoRA names — returned as relative paths for ComfyUI's LoRA loader 'lora_name' input.
         lora_1 = _lora_relative_name(g("lora_1"))

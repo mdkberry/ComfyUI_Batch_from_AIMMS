@@ -6,7 +6,7 @@
 
 **Batch_from_AIMMS** - [documentation](docs/BatchFromAIMMS.md)
 
-***This system provides two approaches for batch processing in ComfyUI: CSV-based processing and direct database integration with AIMMS. The CSV node remains fully functional, but the system now includes an additional node for processing directly from AIMMS databases without needing CSV export.*** - Mark, 6th June 2026.
+***This system provides two approaches for batch processing in ComfyUI: CSV-based processing and direct database integration with AIMMS. The CSV node remains fully functional, but the system now includes an additional node for processing directly from AIMMS databases without needing CSV export.*** - Mark, 7th June 2026.
 
 ## Overview
 

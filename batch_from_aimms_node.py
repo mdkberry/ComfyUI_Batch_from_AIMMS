@@ -269,7 +269,7 @@ def _build_info(row: dict, shot_id: int, media_files: dict) -> str:
 # ---------------------------------------------------------------------------
 
 class BatchFromAIMMS:
-    DESCRIPTION = """
+    """
     ## Description
     A custom ComfyUI node for batch processing workflows from an AIMMS SQLite database. Each execution loads one shot based on the shot_id and provides all relevant data for AI image or video generation.
 

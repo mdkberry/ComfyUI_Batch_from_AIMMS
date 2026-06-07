@@ -299,10 +299,11 @@ class BatchFromAIMMS:
     CATEGORY = "Batch/AIMMS"
     FUNCTION = "load_shot"
 
-    # RETURN_TYPES is populated after class definition (see bottom of file)
-    # so that lora_1/2/3 use the live folder_paths lora list — which gives
-    # them a COMBO connector type that plugs into the LoRA Loader's lora_name.
-    RETURN_TYPES = None  # overwritten below
+    # IMPORTANT:
+    # ComfyUI requires RETURN_TYPES to be a valid tuple at class load time
+    # or the help popup (?) will NOT appear.
+    # This placeholder is overwritten later in the file.
+    RETURN_TYPES = ("STRING",)
 
     RETURN_NAMES = (
         "shot_id",
@@ -347,6 +348,7 @@ class BatchFromAIMMS:
                 ),
             }
         }
+
 
     def load_shot(self, db_path: str, shot_id: str):
         blank = torch.zeros(1, 64, 64, 3, dtype=torch.float32)

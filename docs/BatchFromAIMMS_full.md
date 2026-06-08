@@ -1,8 +1,6 @@
 # ComfyUI_Batch_from_AIMMS 🎬
 
-***NOTE: This is part of a multi-node system for ComfyUI batch processing. The original CSV functionality remains unchanged, but the overall system now includes an additional node for processing directly from AIMMS databases. See the main [README.md](../README.md) for more information about the complete system.*** - Mark, 1st June 2026.
-
-A custom ComfyUI node for **batch/bulk workflow processing** driven directly from an AIMMS SQLite database.
+A custom ComfyUI node for **batch/bulk workflow processing** driven directly from a standard AIMMS SQLite database *(shots.db)*.
 Each shot is selected by shot_id and processed individually, making it perfect for automating large batches across any workflow type — t2i, i2i, i2v, t2v, v2v, or anything else.
 
 ---
@@ -17,7 +15,7 @@ The node accesses two tables in the AIMMS database:
 
 **ComfyUI custom node screenshot (v2.0.3)**
 
-<img width="1842" height="921" alt="screenshot_connections_v2 0 3" src="https://github.com/user-attachments/assets/175497be-0583-4780-b032-e675227b2c39" />
+<img width="1441" height="891" alt="aimms_node_1" src="https://github.com/user-attachments/assets/2de4a64d-6ff3-4b85-97a9-6e0be85c7a6a" />
 
 _The above screenshot shows viable connections you can use and examples of connector outputs for reference. The actual node is on the left. It will load shot data from the AIMMS database based on the shot_id you provide._
 
@@ -232,10 +230,6 @@ _AIMMS (vrs 1.2.0) screenshot of shot details page, showing popup entries for sh
 <img width="1914" height="1076" alt="AIMMS_shot_details" src="https://github.com/user-attachments/assets/1e281f07-ffd1-4fa3-87fd-c9cc6906f54d" />
 
 ---
-
-## Credits
-
-This work was based on and inspired by https://github.com/TharindaMarasingha/ComfyUI-CSV-to-Prompt and the existing Batch from CSV 📋 node.
 
 ## 📄 License
 

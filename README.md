@@ -1,5 +1,9 @@
 # ComfyUI_Batch_from_AIMMS 📋
 
+***Version 2.1.0 is now in a testing phase and may recieve minor fixes and updates up to the point of official tag release (right release section). Both CSV and AIMMS node are available and working now.*** - Mark, 8th June 2026 (AEST).
+
+---
+
 ***NOTE: This is a set of two nodes for ComfyUI batch processing.***
 
 **Batch_from_CSV** - [documentation](docs/BatchFromCSV_full.md)

@@ -29,14 +29,14 @@ CSV columns expected:
   audio_vo         - path to a voice-over audio file — mp3/m4a/flac/wav (STRING)
                      plug into an audio file loader node
 
-  positive_image   - positive prompt text for image generation (STRING)
-  negative_image   - negative prompt text for image generation (STRING)
-  positive_video   - positive prompt text for video generation (STRING)
-  negative_video   - negative prompt text for video generation (STRING)
+  image_prompt     - positive prompt text for image generation (STRING)
+  image_negative   - negative prompt text for image generation (STRING)
+  video_prompt     - positive prompt text for video generation (STRING)
+  video_negative   - negative prompt text for video generation (STRING)
 
   NOTE on prompt usage:
-    positive_image / negative_image are used for t2i and i2i workflows.
-    positive_video / negative_video are used for i2v, t2v, v2v workflows.
+    image_prompt / image_negative are used for t2i and i2i workflows.
+    video_prompt / video_negative are used for i2v, t2v, v2v workflows.
     colour_scheme, scene_context, dialogue are optional extra text fields
     the user can concatenate themselves in the workflow.
 """
@@ -216,10 +216,10 @@ class BatchFromCSV:
     ref_image_3      IMAGE   – third reference image tensor
     video_file       STRING  – normalised path to the video file
     audio_vo         STRING  – path to VO audio file (mp3/m4a/flac/wav), plug into audio loader
-    positive_image   STRING  – positive prompt for image generation (t2i / i2i)
-    negative_image   STRING  – negative prompt for image generation
-    positive_video   STRING  – positive prompt for video generation (i2v / t2v / v2v)
-    negative_video   STRING  – negative prompt for video generation
+    image_prompt     STRING  – positive prompt for image generation (t2i / i2i)
+    image_negative   STRING  – negative prompt for image generation
+    video_prompt     STRING  – positive prompt for video generation (i2v / t2v / v2v)
+    video_negative   STRING  – negative prompt for video generation
     row_index        INT     – the actual row that was loaded (useful for debugging)
     info             STRING  – full row summary — pipe into a Show Any node
     """
@@ -247,10 +247,10 @@ class BatchFromCSV:
         "ref_image_3",
         "video_file",
         "audio_vo",
-        "positive_image",
-        "negative_image",
-        "positive_video",
-        "negative_video",
+        "image_prompt",
+        "image_negative",
+        "video_prompt",
+        "video_negative",
         "row_index",
         "info",
     )
@@ -328,10 +328,10 @@ class BatchFromCSV:
         audio_vo = _validate_audio_path(g("audio_vo"))
 
         # Prompt fields
-        positive_image = g("positive_image")
-        negative_image = g("negative_image")
-        positive_video = g("positive_video")
-        negative_video = g("negative_video")
+        image_prompt = g("image_prompt")
+        image_negative = g("image_negative")
+        video_prompt = g("video_prompt")
+        video_negative = g("video_negative")
 
         row_index = seed  # exposed so users can pipe it for debugging
         info = _build_info(row, seed)
@@ -358,10 +358,10 @@ class BatchFromCSV:
             ref_image_3,
             video_file,
             audio_vo,
-            positive_image,
-            negative_image,
-            positive_video,
-            negative_video,
+            image_prompt,
+            image_negative,
+            video_prompt,
+            video_negative,
             row_index,
             info,
         )
@@ -398,10 +398,10 @@ BatchFromCSV.RETURN_TYPES = (
     "IMAGE",   # ref_image_3
     "STRING",  # video_file
     "STRING",  # audio_vo
-    "STRING",  # positive_image
-    "STRING",  # negative_image
-    "STRING",  # positive_video
-    "STRING",  # negative_video
+    "STRING",  # image_prompt
+    "STRING",  # image_negative
+    "STRING",  # video_prompt
+    "STRING",  # video_negative
     "INT",     # row_index
     "STRING",  # info
 )

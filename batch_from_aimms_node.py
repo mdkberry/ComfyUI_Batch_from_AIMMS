@@ -321,10 +321,10 @@ class BatchFromAIMMS:
     - **ref_image_1/2/3** → (base_image (FF/MF/LF), starred=1/2/3) (IMAGE)
     - **video_file** → (starred video URL, starred=1) (STRING)
     - **audio_vo** → (audio_vo URL) (STRING)
-    - **positive_image** → image_prompt (STRING)
-    - **negative_image** → image_negative (STRING)
-    - **positive_video** → video_prompt (STRING)
-    - **negative_video** → video_negative (STRING)
+    - **image_prompt** → image_prompt (STRING)
+    - **image_negative** → image_negative (STRING)
+    - **video_prompt** → video_prompt (STRING)
+    - **video_negative** → video_negative (STRING)
     - **row_index** → shot_id (INT)
     - **info** → full shot summary (STRING)
     """
@@ -353,10 +353,10 @@ class BatchFromAIMMS:
         "ref_image_3",
         "video_file",
         "audio_vo",
-        "positive_image",
-        "negative_image",
-        "positive_video",
-        "negative_video",
+        "image_prompt",
+        "image_negative",
+        "video_prompt",
+        "video_negative",
         "row_index",
         "info",
     )
@@ -488,10 +488,10 @@ class BatchFromAIMMS:
         audio_vo = _validate_audio_path(media_files["audio_vo"])
 
         # Prompt fields
-        positive_image = g("image_prompt")
-        negative_image = g("image_negative")
-        positive_video = g("video_prompt")
-        negative_video = g("video_negative")
+        image_prompt = g("image_prompt")
+        image_negative = g("image_negative")
+        video_prompt = g("video_prompt")
+        video_negative = g("video_negative")
 
         row_index = current_shot_id  # exposed so users can pipe it for debugging
         info = _build_info(row, current_shot_id, media_files)
@@ -518,10 +518,10 @@ class BatchFromAIMMS:
             ref_image_3,
             video_file,
             audio_vo,
-            positive_image,
-            negative_image,
-            positive_video,
-            negative_video,
+            image_prompt,
+            image_negative,
+            video_prompt,
+            video_negative,
             row_index,
             info,
         )
@@ -570,10 +570,10 @@ BatchFromAIMMS.RETURN_TYPES = (
     "IMAGE",   # ref_image_3
     "STRING",  # video_file
     "STRING",  # audio_vo
-    "STRING",  # positive_image
-    "STRING",  # negative_image
-    "STRING",  # positive_video
-    "STRING",  # negative_video
+    "STRING",  # image_prompt
+    "STRING",  # image_negative
+    "STRING",  # video_prompt
+    "STRING",  # video_negative
     "INT",     # row_index
     "STRING",  # info
 )

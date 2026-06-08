@@ -1,7 +1,5 @@
 # ComfyUI_Batch_from_AIMMS 📋
 
-***CSV is working but AIMMS node is in development and needs further testing at this time. Check back in 2 days.*** - Mark, 7th June 2026.
-
 ***NOTE: This is a set of two nodes for ComfyUI batch processing.***
 
 **Batch_from_CSV** - [documentation](docs/BatchFromCSV_full.md)
@@ -9,6 +7,13 @@
 **Batch_from_AIMMS** - [documentation](docs/BatchFromAIMMS_full.md)
 
 ***This system provides two approaches for batch processing in ComfyUI: CSV-based processing and direct database integration with AIMMS.***
+
+## Versions
+
+### v2.1.0 - 8th June 2026
+
+- Split into two nodes, original for CSV processing, and now one for AIMMS project `shots.db` database processing
+- Tested working `Batch from AIMMS` node
 
 ## Overview
 
@@ -94,8 +99,8 @@ Both nodes provide similar output connectors:
 - `lora_1`, `lora_2`, `lora_3` - LoRA file paths (COMBO type)
 - `ref_image_1`, `ref_image_2`, `ref_image_3` - Reference images (IMAGE type)
 - `video_file`, `audio_vo` - Media file paths
-- `positive_image`, `negative_image` - Image generation prompts
-- `positive_video`, `negative_video` - Video generation prompts
+- `image_prompt`, `image_negative` - Image generation prompts
+- `video_prompt`, `video_negative` - Video generation prompts
 - `row_index`, `info` - Debug and metadata information
 
 ## Integration with AIMMS Storyboard Management System

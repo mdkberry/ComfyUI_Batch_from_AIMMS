@@ -22,10 +22,10 @@ A custom ComfyUI node for batch processing workflows from an AIMMS SQLite databa
 - **ref_image_3** (IMAGE): Third reference image tensor
 - **video_file** (STRING): Normalised path to the video file
 - **audio_vo** (STRING): Path to VO audio file (mp3/m4a/flac/wav), plug into audio loader
-- **positive_image** (STRING): Positive prompt for image generation (t2i / i2i)
-- **negative_image** (STRING): Negative prompt for image generation
-- **positive_video** (STRING): Positive prompt for video generation (i2v / t2v / v2v)
-- **negative_video** (STRING): Negative prompt for video generation
+- **image_prompt** (STRING): Positive prompt for image generation (t2i / i2i)
+- **image_negative** (STRING): Negative prompt for image generation
+- **video_prompt** (STRING): Positive prompt for video generation (i2v / t2v / v2v)
+- **video_negative** (STRING): Negative prompt for video generation
 - **row_index** (INT): The actual shot_id that was loaded (useful for debugging)
 - **info** (STRING): Full shot summary — pipe into a Show Any node
 
@@ -40,9 +40,9 @@ A custom ComfyUI node for batch processing workflows from an AIMMS SQLite databa
 - **ref_image_1/2/3** → takes table (base_image, starred=1/2/3) (IMAGE)
 - **video_file** → takes table (final_video, starred=1) (STRING)
 - **audio_vo** → takes table (audio_vo) (STRING)
-- **positive_image** → image_prompt (STRING)
-- **negative_image** → image_negative (STRING)
-- **positive_video** → video_prompt (STRING)
-- **negative_video** → video_negative (STRING)
+- **image_prompt** → image_prompt (STRING)
+- **image_negative** → image_negative (STRING)
+- **video_prompt** → video_prompt (STRING)
+- **video_negative** → video_negative (STRING)
 - **row_index** → shot_id (INT)
 - **info** → full shot summary (STRING)

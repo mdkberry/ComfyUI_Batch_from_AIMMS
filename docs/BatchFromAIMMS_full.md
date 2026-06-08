@@ -43,16 +43,16 @@ _The above screenshot shows viable connections you can use and examples of conne
 | `ref_image_3`     | IMAGE  | Third reference image loaded as a ComfyUI IMAGE tensor e.g. LF |
 | `video_file`      | STRING | Normalised path to your `.mp4` video file input for v2v based workflows |
 | `audio_vo`        | STRING | Path to voice-over/dialogue audio file (`.mp3`, `.m4a`, `.flac`, `.wav`) — plug into **Audio File Loader** path input |
-| `positive_image`  | STRING | Positive prompt text for image generation (t2i / i2i) |
-| `negative_image`  | STRING | Negative prompt text for image generation |
-| `positive_video`  | STRING | Positive prompt text for video generation (i2v / t2v / v2v) |
-| `negative_video`  | STRING | Negative prompt text for video generation |
+| `image_prompt`    | STRING | Positive prompt text for image generation (t2i / i2i) |
+| `image_negative`  | STRING | Negative prompt text for image generation |
+| `video_prompt`    | STRING | Positive prompt text for video generation (i2v / t2v / v2v) |
+| `video_negative`  | STRING | Negative prompt text for video generation |
 | `row_index`       | INT    | The shot ID that was loaded — handy for debugging |
 | `info`            | STRING | Full shot summary — pipe into a **Show Any** node to embed all shot data in PNG workflow metadata |
 
 **Notes on the text/prompt fields:**
-- `positive_image` / `negative_image` — use for image-based workflows (t2i, i2i).
-- `positive_video` / `negative_video` — use for video-based workflows (i2v, t2v, v2v).
+- `image_prompt` / `image_negative` — use for image-based workflows (t2i, i2i).
+- `video_prompt` / `video_negative` — use for video-based workflows (i2v, t2v, v2v).
 - `colour_scheme`, `scene_context`, `dialogue` — optional helper fields. Concatenate any combination of these with a prompt in your workflow using a **String Concatenate** or similar node.
 - LoRA and audio paths are returned as plain strings — blank if not set in the database. Connect to the appropriate loader's file path input.
 
@@ -169,10 +169,10 @@ Enter comma-separated shot IDs in the `shot_id` field (e.g. "1,2,5,3").
 
 | Node output       | Connect to |
 |-------------------|------------|
-| `positive_image`  | CLIP Text Encode (Positive) → text (for image workflows) |
-| `negative_image`  | CLIP Text Encode (Negative) → text (for image workflows) |
-| `positive_video`  | CLIP Text Encode (Positive) → text (for video workflows) |
-| `negative_video`  | CLIP Text Encode (Negative) → text (for video workflows) |
+| `image_prompt`    | CLIP Text Encode (Positive) → text (for image workflows) |
+| `image_negative`  | CLIP Text Encode (Negative) → text (for image workflows) |
+| `video_prompt`    | CLIP Text Encode (Positive) → text (for video workflows) |
+| `video_negative`  | CLIP Text Encode (Negative) → text (for video workflows) |
 | `colour_scheme`   | String Concatenate → input (combine with positive prompt as needed) |
 | `scene_context`   | String Concatenate → input |
 | `dialogue`        | String Concatenate → input |

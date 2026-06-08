@@ -37,6 +37,8 @@ import os
 import sqlite3
 import numpy as np
 import torch
+import time
+import json
 from PIL import Image
 
 # ---------------------------------------------------------------------------
@@ -247,6 +249,37 @@ def _read_shot_from_db(db_path: str, shot_id: int) -> dict:
             conn.close()
 
 
+def _get_state_path():
+    """Returns path to state JSON in the custom node's own directory."""
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "batch_aimms_state.json")
+
+
+def _load_state(shot_ids_str: str) -> dict:
+    """Load state JSON, resetting if shot_id list has changed."""
+    state_path = _get_state_path()
+    default = {"index": 0, "last_shot_ids": shot_ids_str, "reset_consumed": False}
+    if not os.path.isfile(state_path):
+        return default
+    try:
+        with open(state_path, "r") as f:
+            state = json.load(f)
+        # If the shot_id list changed, treat as fresh start
+        if state.get("last_shot_ids") != shot_ids_str:
+            return default
+        return state
+    except Exception:
+        return default
+
+
+def _save_state(state: dict):
+    state_path = _get_state_path()
+    try:
+        with open(state_path, "w") as f:
+            json.dump(state, f)
+    except Exception as e:
+        print(f"[ComfyUI_Batch_from_AIMMS] WARNING: Could not save state: {e}")
+
+
 def _build_info(row: dict, shot_id: int, media_files: dict) -> str:
     """Build a human-readable summary of the current shot for debug/metadata embedding."""
     lines = [f"Shot ID : {shot_id}"]
@@ -346,11 +379,20 @@ class BatchFromAIMMS:
                         "tooltip": "Comma-separated list of shot IDs to process (e.g. '1,2,5,3')"
                     }
                 ),
+            },
+            "optional": {
+                "reset_index": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "tooltip": "Toggle ON to restart shot_id stepping from the first entry on the next run. Automatically self-locks after firing so the batch continues without interruption. Toggle OFF to re-arm for future resets."
+                    }
+                ),
             }
         }
 
 
-    def load_shot(self, db_path: str, shot_id: str):
+    def load_shot(self, db_path: str, shot_id: str, reset_index: bool = False):
         blank = torch.zeros(1, 64, 64, 3, dtype=torch.float32)
 
         # Validate database path
@@ -359,16 +401,39 @@ class BatchFromAIMMS:
             return ("", "", "", "", "", "", "", "", "", blank, blank, blank,
                     "", "", "", "", "", "", 0, "Database file not found.")
         
-        # Parse the shot_id string
-        try:
-            shot_ids = [int(id.strip()) for id in shot_id.split(",")]
-        except ValueError:
-            print(f"[ComfyUI_Batch_from_AIMMS] ERROR: Invalid shot_id format. Expected comma-separated integers.")
-            return ("", "", "", "", "", "", "", "", "", blank, blank, blank,
-                    "", "", "", "", "", "", 0, "Invalid shot_id format.")
+        # Parse shot_ids
+        shot_ids = [int(x.strip()) for x in shot_id.split(",") if x.strip()]
+        shot_ids_str = shot_id.strip()
+
+        # Load persistent state
+        state = _load_state(shot_ids_str)
+
+        # Handle reset_index toggle with self-lock logic
+        if reset_index:
+            if not state.get("reset_consumed", False):
+                # First run with reset=True: fire the reset
+                state["index"] = 0
+                state["reset_consumed"] = True
+                print("[ComfyUI_Batch_from_AIMMS] Reset fired: stepping from shot_id index 0")
+            # else: reset already consumed this session, continue stepping normally
+        else:
+            # Toggle is OFF: re-arm so it will fire again next time user turns it ON
+            state["reset_consumed"] = False
+
+        # Clamp index in case shot_id list shrank
+        if state["index"] >= len(shot_ids):
+            state["index"] = 0
+
+        # Select current shot
+        current_index = state["index"]
+        current_shot_id = shot_ids[current_index]
+
+        # Advance index for next run (wraps around)
+        state["index"] = (current_index + 1) % len(shot_ids)
+        state["last_shot_ids"] = shot_ids_str
+        _save_state(state)
         
-        # Process the first shot_id in the list (we'll extend to support sequences later)
-        current_shot_id = shot_ids[0]
+        print(f"[ComfyUI_Batch_from_AIMMS] Run {current_index + 1}/{len(shot_ids)}: shot_id={current_shot_id}")
         
         # Get shot data from database
         row = _read_shot_from_db(db_path, current_shot_id)
@@ -462,13 +527,10 @@ class BatchFromAIMMS:
         )
 
     @classmethod
-    def IS_CHANGED(cls, db_path, shot_id):
-        # Return a float to ensure ComfyUI handles this as a change
-        try:
-            shot_ids = [int(id.strip()) for id in shot_id.split(",")]
-            return float(shot_ids[0])
-        except ValueError:
-            return 1.0  # Default to 1.0 if there's an error
+    def IS_CHANGED(cls, db_path, shot_id, reset_index=False):
+        return float(time.time())
+        # Always forces re-execution — required for stateful stepping to work.
+        # Each queue slot = one step through the shot_id list.
 
 
 # ---------------------------------------------------------------------------

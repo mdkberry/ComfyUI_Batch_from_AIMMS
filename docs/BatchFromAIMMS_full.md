@@ -13,7 +13,7 @@ The node accesses two tables in the AIMMS database:
 
 ---
 
-**ComfyUI custom node screenshot (v2.0.3)**
+**ComfyUI "Batch from AIMMS" node screen shot**
 
 <img width="1441" height="891" alt="aimms_node_1" src="https://github.com/user-attachments/assets/2de4a64d-6ff3-4b85-97a9-6e0be85c7a6a" />
 

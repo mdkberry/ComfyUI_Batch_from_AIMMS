@@ -60,18 +60,26 @@ Both nodes support the same workflow types (t2i, i2i, i2v, t2v, v2v) and provide
 ```
 ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 │
-├── csv_files/                  ← PUT YOUR CSV FILES HERE (for CSV node)
-│   ├── example_batch.csv
-│   └── my_project.csv
-│
-├── __init__.py
-├── batch_from_csv_node.py        ← CSV processing node
+├── batch_aimms_state.json      ← State tracking for AIMMS node
 ├── batch_from_aimms_node.py     ← AIMMS database processing node
+├── batch_from_csv_node.py        ← CSV processing node
+├── LICENSE
 ├── pyproject.toml
 ├── README.md                    ← This file (main documentation)
-└── docs/                        ← Detailed documentation for each node
-    ├── BatchFromCSV_full.md          ← CSV node documentation
-    └── BatchFromAIMMS_full.md        ← AIMMS node documentation
+├── __init__.py
+│
+├── csv_files/                  ← PUT YOUR CSV FILES HERE (for CSV node)
+│   └── example_batch.csv
+│
+├── docs/                        ← Detailed documentation for each node
+│   ├── BatchFromAIMMS.md
+│   ├── BatchFromAIMMS_full.md    ← AIMMS node documentation
+│   ├── BatchFromCSV_full.md      ← CSV node documentation
+│   └── shots_db_schema.md
+│
+└── web/                         ← Web interface extensions
+    └── js/
+        └── aimms_help.js
 ```
 
 ## Usage Guide
@@ -89,6 +97,7 @@ ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 2. Point the node to your AIMMS SQLite database file (AIMMS application does not need to be open it will tap into the shots.db) e.g. `M:\AIMMS_Projects\project_BlackMagic\data\shots.db` *(note this is Windows file path, both Linux and Windows methods should work. It must see the shots.db)*
 3. Specify the shot IDs you want to process (e.g. `1,2,3,54,101`)
 4. Use the "Batch from AIMMS 🎬" node in your ComfyUI workflow
+5. **Advanced feature**: Use the `reset_index` toggle to restart batch processing from the first shot ID when needed
 
 ## Common Output Connectors
 
@@ -121,6 +130,7 @@ For more information about AIMMS integration, see the respective documentation f
 - **Database not found** - Verify the database path is correct *(Windows or Linux supported, OSX is not tested)*
 - **Missing media files** - Ensure all referenced files exist at the specified paths
 - **LoRA not loading** - Confirm the LoRA paths are correct relative to your models/loras folder
+- **Batch processing stuck** - Use the `reset_index` toggle on the AIMMS node to restart from the first shot ID
 - **OOMs or slow-down issues** - When batch processing make sure to clear VRAM and RAM down between each run *(ComfyUI switches, or better is custom nodes)*
 
 ### Getting Help

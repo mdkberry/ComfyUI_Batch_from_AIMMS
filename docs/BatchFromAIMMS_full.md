@@ -1,7 +1,5 @@
 # ComfyUI_Batch_from_AIMMS 🎬
 
-***CSV node is working but AIMMS node is in development and needs further testing at this time. Check back in 2 days.*** - Mark, 7th June 2026.
-
 ***NOTE: This is part of a multi-node system for ComfyUI batch processing. The original CSV functionality remains unchanged, but the overall system now includes an additional node for processing directly from AIMMS databases. See the main [README.md](../README.md) for more information about the complete system.*** - Mark, 1st June 2026.
 
 A custom ComfyUI node for **batch/bulk workflow processing** driven directly from an AIMMS SQLite database.
@@ -96,18 +94,26 @@ _The above screenshot shows viable connections you can use and examples of conne
 ```
 ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 │
-├── csv_files/                  ← PUT YOUR CSV FILES HERE (for CSV node)
-│   ├── example_batch.csv
-│   └── my_project.csv
-│
-├── __init__.py
-├── batch_from_csv_node.py        ← CSV processing node
+├── batch_aimms_state.json      ← State tracking for AIMMS node
 ├── batch_from_aimms_node.py     ← AIMMS database processing node
+├── batch_from_csv_node.py        ← CSV processing node
+├── LICENSE
 ├── pyproject.toml
 ├── README.md                    ← Main documentation for the entire system
-└── docs/                        ← Detailed documentation for each node
-    ├── BatchFromCSV_full.md          ← CSV node documentation
-    └── BatchFromAIMMS_full.md        ← This file (AIMMS node documentation)
+├── __init__.py
+│
+├── csv_files/                  ← PUT YOUR CSV FILES HERE (for CSV node)
+│   └── example_batch.csv
+│
+├── docs/                        ← Detailed documentation for each node
+│   ├── BatchFromAIMMS.md
+│   ├── BatchFromAIMMS_full.md    ← This file (AIMMS node documentation)
+│   ├── BatchFromCSV_full.md      ← CSV node documentation
+│   └── shots_db_schema.md
+│
+└── web/                         ← Web interface extensions
+    └── js/
+        └── aimms_help.js
 ```
 
 ---
@@ -165,6 +171,13 @@ Enter the path to your AIMMS SQLite database file in the `db_path` field. The de
 
 Enter comma-separated shot IDs in the `shot_id` field (e.g. "1,2,5,3").
 
+### Step 3.5 — Use reset_index toggle (optional)
+
+The `reset_index` toggle provides advanced batch control:
+- **Toggle ON**: Restarts shot_id stepping from the first entry on the next run. Automatically self-locks after firing so the batch continues without interruption.
+- **Toggle OFF**: Re-arms for future resets (default state).
+- Use this when you need to restart your batch processing from the beginning without re-entering shot IDs.
+
 ### Step 4 — Connect outputs
 
 | Node output       | Connect to |
@@ -202,6 +215,7 @@ Enter comma-separated shot IDs in the `shot_id` field (e.g. "1,2,5,3").
 | LoRA not loading | Confirm the full path is correct; the node returns the path as a string only |
 | Info shows empty paths | Make sure the relevant fields exist in your database tables |
 | No outputs being made after first run | Make sure you have set the shot IDs back to your desired list to start over |
+| Batch processing stuck | Use the `reset_index` toggle to restart from the first shot ID |
 | Second runs are slow | You may need to offload models between batch runs to clear the memory for VRAM and RAM |
 | OOMs cause failures | Try setting switches for ComfyUI to aid with avoiding OOMs during batch processing and add memory clearing features to the workflow. |
 

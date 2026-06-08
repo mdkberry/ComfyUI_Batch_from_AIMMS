@@ -93,18 +93,26 @@ _(Field names relate to [AIMMS Storyboard Management](https://markdkberry.com/so
 ```
 ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 │
-├── csv_files/                  ← PUT YOUR CSV FILES HERE
-│   ├── example_batch.csv
-│   └── my_project.csv
-│
-├── __init__.py
-├── batch_from_csv_node.py        ← CSV processing node
+├── batch_aimms_state.json      ← State tracking for AIMMS node
 ├── batch_from_aimms_node.py     ← AIMMS database processing node
+├── batch_from_csv_node.py        ← CSV processing node
+├── LICENSE
 ├── pyproject.toml
 ├── README.md                    ← Main documentation for the entire system
-└── docs/                        ← Detailed documentation for each node
-    ├── BatchFromCSV_full.md          ← This file (CSV node documentation)
-    └── BatchFromAIMMS_full.md        ← AIMMS node documentation
+├── __init__.py
+│
+├── csv_files/                  ← PUT YOUR CSV FILES HERE
+│   └── example_batch.csv
+│
+├── docs/                        ← Detailed documentation for each node
+│   ├── BatchFromAIMMS.md
+│   ├── BatchFromAIMMS_full.md    ← AIMMS node documentation
+│   ├── BatchFromCSV_full.md      ← This file (CSV node documentation)
+│   └── shots_db_schema.md
+│
+└── web/                         ← Web interface extensions
+    └── js/
+        └── aimms_help.js
 ```
 
 ---

@@ -33,7 +33,7 @@ _(Field names relate to [AIMMS Storyboard Management](https://markdkberry.com/so
 | `colour_scheme`   | STRING | Optional colour palette description — concatenate into prompt in workflow |
 | `scene_context`   | STRING | Optional scene/environment description — concatenate into prompt in workflow |
 | `dialogue`        | STRING | Optional dialogue text — concatenate into prompt in workflow e.g. VibeVoice, or add "quotes" if prompt driven |
-| `lora_1`          | COMBO  | LoRA name — wire directly into the **lora_name** input on a standard LoRA Loader node |
+| `lora_1`          | COMBO  | LoRA name — wire directly into the **lora_name** input on a standard LoRA Loader node (provide only the subfolder path below your lora folder e.g."LTX-23\ltx2.3-transition.safetensors") |
 | `lora_2`          | COMBO  | LoRA name — wire directly into a second LoRA Loader |
 | `lora_3`          | COMBO  | LoRA name — wire directly into a third LoRA Loader |
 | `ref_image_1`     | IMAGE  | First reference image loaded as a ComfyUI IMAGE tensor e.g FF |
@@ -119,7 +119,7 @@ ComfyUI/custom_nodes/ComfyUI_Batch_from_AIMMS/
 
 ## 📝 CSV Format
 
-Your CSV must use these **exact column headers** (order doesn't matter, all are optional except what your workflow needs):
+Your CSV must use these **exact column headers** (order doesn't matter, all entries are optional except what your workflow needs):
 
 | Column           | Type   | Description |
 |------------------|--------|-------------|
@@ -129,9 +129,9 @@ Your CSV must use these **exact column headers** (order doesn't matter, all are 
 | `colour_scheme`  | string | Colour palette description (optional — concatenate in workflow) |
 | `scene_context`  | string | Scene/environment description (optional) |
 | `dialogue`       | string | Dialogue text (optional) |
-| `lora_1`         | path   | Full path to a LoRA `.safetensors` file |
-| `lora_2`         | path   | Full path to a second LoRA |
-| `lora_3`         | path   | Full path to a third LoRA |
+| `lora_1`         | path   | subfolder path to a LoRA, e.g. "LTX-23\ltx2.3-transition.safetensors" |
+| `lora_2`         | path   | subfolder path to a second LoRA |
+| `lora_3`         | path   | subfolder path to a third LoRA |
 | `ref_image_1`    | path   | Full path to a reference image (PNG/JPG etc.) |
 | `ref_image_2`    | path   | Full path to a second reference image |
 | `ref_image_3`    | path   | Full path to a third reference image |
@@ -142,8 +142,8 @@ Your CSV must use these **exact column headers** (order doesn't matter, all are 
 | `positive_video` | string | Positive prompt for video generation |
 | `negative_video` | string | Negative prompt for video generation |
 
-> **Tip:** Wrap cell values in double quotes if they contain commas.
-> Leave a cell blank (not absent) if that field isn't needed for a particular row.
+> **Tip:** Wrap csv cell values in double quotes if they contain commas.
+> Leave a cell blank if that field isn't needed for a particular row.
 
 ---
 
@@ -153,11 +153,13 @@ Your CSV must use these **exact column headers** (order doesn't matter, all are 
 
 Double-click the canvas → search for **"Batch from CSV"** (category: `Batch/CSV`).
 
-For database processing from AIMMS, search for **"Batch from AIMMS"** (category: `Batch/AIMMS`).
+(For database processing from AIMMS, search for **"Batch from AIMMS"** (category: `Batch/AIMMS`)).
 
 ### Step 2 — Select your CSV
 
-Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI menu if a newly added file doesn't appear.
+Save your csv file to the `csv_files` folder within the custom node directory.
+Choose your file from the `csv_file` dropdown. 
+Click (R) to **refresh** the nodes in the ComfyUI menu if a newly added csv file doesn't appear.
 
 ### Step 3 — Connect outputs
 
@@ -170,7 +172,7 @@ Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI 
 | `colour_scheme`   | String Concatenate → input (combine with positive prompt as needed) |
 | `scene_context`   | String Concatenate → input |
 | `dialogue`        | String Concatenate → input |
-| `lora_1/2/3`      | Standard **Load LoRA** node → `lora_name` input (wire directly — the output is COMBO type, matching the LoRA Loader's socket) |
+| `lora_1/2/3`      | Standard **Load LoRA** node → `lora_name` input (wire directly — the output is COMBO type, matching the LoRA Loader's socket) provide subfolder below lora folder, if you use them e.g. "LTX-23\ltx2.3-transition.safetensors" |
 | `ref_image_1/2/3` | Any node that accepts an IMAGE (IPAdapter, Load Image passthrough, etc.) |
 | `video_file`      | Any node that accepts a STRING path (e.g. VHS Load Video → video path) |
 | `audio_vo`        | Audio File Loader → file path input |
@@ -180,9 +182,13 @@ Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI 
 
 ### Step 4 — Configure for batch
 
-1. On the **Batch from CSV** node, set the `seed` widget control to **increment** and the seed to 1 _(set to 1 it starts at row below the header)_ .
+1. On the **Batch from CSV** node, set the `seed` widget control to **increment** and the seed to 1 _(When set to 1 it starts at the first row below the column headers)_ .
 2. In the ComfyUI menu set **Batch count** to the number of rows in your CSV _(excluding column header)_ .
 3. Click **Queue Prompt** — ComfyUI will run once per row, automatically loading the next row each time.
+
+#### Step 5 — Run the batch & Reset
+
+After running a batch you will need to reset the seed number back to 1 or it will start from the last row number it reached when you next run it *(this may change in future versions of the node depending on preferred usability)*.
 
 ---
 
@@ -193,7 +199,7 @@ Choose your file from the `csv_file` dropdown. Click **Refresh** in the ComfyUI 
 | No CSV files in dropdown | Make sure your `.csv` is inside `csv_files/`, then click **Refresh** or press R to reload nodes inside comfyUI  |
 | Image outputs are blank/black | Check the path in the CSV is correct and the file exists |
 | Video/audio path warning in console | The path is returned as a string even if missing — check spelling |
-| LoRA not loading | Confirm the full path is correct; the node returns the path as a string only |
+| LoRA not loading | Confirm the full path is correct; the node returns the path as a string only dont use full file paths, you only need the subfolder path below your lora folder e.g. subfolder path: "LTX-23\ltx2.3-transition.safetensors" |
 | Row not advancing | Ensure the seed is set to **increment**, not fixed |
 | Info shows empty paths | Make sure the relevant columns exist in your CSV header row |
 | No outputs being made after first run | Make sure you have set the seed back to 1 to start over |

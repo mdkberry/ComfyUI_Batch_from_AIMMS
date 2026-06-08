@@ -31,7 +31,7 @@ _The above screenshot shows viable connections you can use and examples of conne
 | `colour_scheme`   | STRING | Optional colour palette description — concatenate into prompt in workflow |
 | `scene_context`   | STRING | Optional scene/environment description — concatenate into prompt in workflow |
 | `dialogue`        | STRING | Optional dialogue text — concatenate into prompt in workflow e.g. VibeVoice, or add "quotes" if prompt driven |
-| `lora_1`          | COMBO  | LoRA name — wire directly into the **lora_name** input on a standard LoRA Loader node |
+| `lora_1`          | COMBO  | LoRA name — wire directly into the **lora_name** input on a standard LoRA Loader node (provide only the subfolder path below your lora folder e.g."LTX-23\ltx2.3-transition.safetensors") |
 | `lora_2`          | COMBO  | LoRA name — wire directly into a second LoRA Loader |
 | `lora_3`          | COMBO  | LoRA name — wire directly into a third LoRA Loader |
 | `ref_image_1`     | IMAGE  | First reference image loaded as a ComfyUI IMAGE tensor e.g FF |
@@ -50,7 +50,7 @@ _The above screenshot shows viable connections you can use and examples of conne
 - `image_prompt` / `image_negative` — use for image-based workflows (t2i, i2i).
 - `video_prompt` / `video_negative` — use for video-based workflows (i2v, t2v, v2v).
 - `colour_scheme`, `scene_context`, `dialogue` — optional helper fields. Concatenate any combination of these with a prompt in your workflow using a **String Concatenate** or similar node.
-- LoRA and audio paths are returned as plain strings — blank if not set in the database. Connect to the appropriate loader's file path input.
+- LoRA and audio paths are returned as plain strings — blank if not set in the database. Connect to the appropriate loader's file path input. For Loras provide only the subfolder path below your lora folder e.g."LTX-23\ltx2.3-transition.safetensors".
 
 ---
 
@@ -134,7 +134,7 @@ The node expects an AIMMS database with the following table structure:
 | `colour_scheme_image` | TEXT   | Colour palette description (optional) |
 | `video_prompt`        | TEXT   | Positive prompt for video generation |
 | `video_negative`      | TEXT   | Negative prompt for video generation |
-| `lora_1`              | TEXT   | LoRA name (relative path) |
+| `lora_1`              | TEXT   | LoRA name (relative path e.g."LTX-23\ltx2.3-transition.safetensors") |
 | `lora_2`              | TEXT   | Second LoRA name (relative path) |
 | `lora_3`              | TEXT   | Third LoRA name (relative path) |
 | `time_of_day`         | TEXT   | Time of day (e.g. "morning", "night") |
@@ -210,7 +210,7 @@ The `reset_index` toggle provides advanced batch control:
 | Shot ID not found | Verify the shot ID exists in your database |
 | Image outputs are blank/black | Check the media file paths in the takes table are correct and the files exist |
 | Video/audio path warning in console | The path is returned as a string even if missing — check spelling |
-| LoRA not loading | Confirm the full path is correct; the node returns the path as a string only |
+| LoRA not loading | Confirm the relative path is correct; the node returns the path as a string only (provide only the subfolder path below your lora folder e.g."LTX-23\ltx2.3-transition.safetensors") |
 | Info shows empty paths | Make sure the relevant fields exist in your database tables |
 | No outputs being made after first run | Make sure you have set the shot IDs back to your desired list to start over |
 | Batch processing stuck | Use the `reset_index` toggle to restart from the first shot ID |
@@ -221,11 +221,11 @@ The `reset_index` toggle provides advanced batch control:
 
 ## Integration with AIMMS Storyboard Management System
 
-This node provides direct integration with [AIMMS Storyboard Management System (vrs 1.2.0)](https://markdkberry.com/software/) by accessing the SQLite database directly.
+This node provides direct integration with [AIMMS Storyboard Management System (vrs 1.2.x)](https://markdkberry.com/software/) by accessing the SQLite database directly.
 
 For CSV-based processing from AIMMS exports, see the companion node [Batch from CSV 📋](BatchFromCSV.md).
 
-_AIMMS (vrs 1.2.0) screenshot of shot details page, showing popup entries for shot management:_
+_AIMMS (vrs 1.2.x) screenshot of shot details page, showing popup entries for shot management:_
 
 <img width="1914" height="1076" alt="AIMMS_shot_details" src="https://github.com/user-attachments/assets/1e281f07-ffd1-4fa3-87fd-c9cc6906f54d" />
 

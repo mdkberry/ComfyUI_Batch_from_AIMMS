@@ -116,6 +116,7 @@ For more information about AIMMS integration, see the respective documentation f
 - **Database not found** - Verify the database path is correct *(Windows or Linux supported, OSX is not tested)*
 - **Missing media files** - Ensure all referenced files exist at the specified paths
 - **LoRA not loading** - Confirm the LoRA paths are correct relative to your models/loras folder
+- **OOMs or slow-down issues** - When batch processing make sure to clear VRAM and RAM down between each run *(ComfyUI switches, or better is custom nodes)*
 
 ### Getting Help
 

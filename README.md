@@ -14,9 +14,9 @@
 
 ## Versions
 
-### v2.1.0 - 8th June 2026
+### v2.1.0 - 9th June 2026 (AEST)
 
-- Split into two nodes, original for CSV processing, and now one for AIMMS project `shots.db` database processing
+- Split custom node into two nodes - the original for CSV processing, and new one for AIMMS project `shots.db` database processing
 - Tested working `Batch from AIMMS` node
 
 ## Overview
